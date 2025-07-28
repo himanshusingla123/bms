@@ -1,135 +1,155 @@
-# Turborepo starter
+# 🚀 Turborepo Monorepo Starter
 
-This Turborepo starter is maintained by the Turborepo core team.
+This is a full-stack monorepo setup using [Turborepo](https://turbo.build/repo) that includes:
 
-## Using this example
+* `http-server` – Express or REST API server
+* `web-app` – Next.js frontend
+* `websocket-connection` – WebSocket server
+* `packages/prisma` – Shared Prisma ORM package
 
-Run the following command:
+---
 
-```sh
+## 🧱 Getting Started
+
+### 1. Create Monorepo with Turborepo
+
+```bash
 npx create-turbo@latest
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## 📦 Apps & Packages
 
-### Apps and Packages
+### 🧩 Apps
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+| App                    | Description                                   |
+| ---------------------- | --------------------------------------------- |
+| `http-server`          | Backend API server (e.g., Express or Fastify) |
+| `web-app`              | Next.js frontend with Turbopack               |
+| `websocket-connection` | WebSocket-based real-time server              |
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### 📦 Packages
 
-### Utilities
+| Package  | Description                                  |
+| -------- | -------------------------------------------- |
+| `prisma` | Centralized database client using Prisma ORM |
 
-This Turborepo has some additional tools already setup for you:
+---
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+## 🛠 Create App/Package Structure
 
-### Build
+```bash
+cd turbo-monorepo # or your monorepo name
 
-To build all apps and packages, run the following command:
+# Create apps
+mkdir -p apps/http-server
+mkdir -p apps/web-app
+mkdir -p apps/websocket-connection
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+# Create shared package
+mkdir -p packages/prisma
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+## 🧪 Prisma Setup
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+### 1. Initialize Prisma inside `packages/prisma`:
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+cd packages/prisma
+npm init -y
+npm install prisma @prisma/client
+npx prisma init
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+This will create:
 
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+packages/prisma/
+├── prisma/
+│   └── schema.prisma
+├── src/
+│   └── index.ts
 ```
 
-### Remote Caching
+### 2. Export Prisma client in `src/index.ts`
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+```ts
+import { PrismaClient } from '@prisma/client';
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+const client = new PrismaClient();
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+export default client;
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+---
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## 🧩 Link Prisma in Apps
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+In your `apps/web-app`, `apps/http-server`, or `apps/websocket-connection`:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+```ts
+import client from '@repo/prisma'; // or your alias path
 ```
 
-## Useful Links
+---
 
-Learn more about the power of Turborepo:
+## 🔧 tsconfig.json Alias Setup (Optional)
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+In the monorepo root `tsconfig.json`, add:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/prisma": ["packages/prisma/src"]
+    }
+  }
+}
+```
+
+---
+
+## 🧼 Fix Common Issues
+
+If you see **multiple lockfile warnings**, run:
+
+```bash
+rm -rf node_modules pnpm-lock.yaml package-lock.json
+```
+
+Then reinstall cleanly:
+
+```bash
+pnpm install # or npm install
+```
+
+---
+
+## 🏁 Start Dev Servers
+
+### From root:
+
+```bash
+# Start all apps concurrently
+pnpm dev
+```
+
+Or individually:
+
+```bash
+# Run HTTP Server
+cd apps/http-server
+pnpm dev
+
+# Run Web App
+cd apps/web-app
+pnpm dev
+
+# Run WebSocket Server
+cd apps/websocket-connection
+pnpm dev
+```
